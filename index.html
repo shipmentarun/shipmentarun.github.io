@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Shipment</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+        <style>
+            /* Remove the navbar's default margin-bottom and rounded borders */ 
+            .navbar {
+                margin-bottom: 0;
+                border-radius: 0;
+            }
+
+            /* Add a gray background color and some padding to the footer */
+            /*            footer {
+                           
+                           
+                        }*/
+
+            footer {
+               
+                height: 50px;
+                bottom: 0;
+                width: 100%;
+                background-color: #f2f2f2;
+                padding: 25px;
+            }
+
+
+            body {font-family: Arial;}
+
+            /* Style the tab */
+            .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+            }
+
+            /* Style the buttons inside the tab */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+            }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+            /* Style the tab content */
+            .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+            th{
+                text-align: center;
+            }
+        </style>
+
+
+    </head>
+    <body>
+        <script type="text/javascript">
+            var source, destination;
+            var directionsDisplay;
+            var directionsService = new google.maps.DirectionsService();
+            google.maps.event.addDomListener(window, 'load', function () {
+                new google.maps.places.SearchBox(document.getElementById('txtSource'));
+                new google.maps.places.SearchBox(document.getElementById('txtDestination'));
+                directionsDisplay = new google.maps.DirectionsRenderer({'draggable': true});
+            });
+
+            function GetRoute() {
+                var chennai = new google.maps.LatLng(13.0827, 80.2707);
+                var mapOptions = {
+                    zoom: 7,
+                    center: chennai
+                };
+                map = new google.maps.Map(document.getElementById('dvMap'), mapOptions);
+                directionsDisplay.setMap(map);
+                directionsDisplay.setPanel(document.getElementById('dvPanel'));
+
+                //*********DIRECTIONS AND ROUTE**********************//
+                source = document.getElementById("txtSource").value;
+                destination = document.getElementById("txtDestination").value;
+
+                var request = {
+                    origin: source,
+                    destination: destination,
+                    travelMode: google.maps.TravelMode.DRIVING
+
+                };
+                directionsService.route(request, function (response, status) {
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                    }
+                });
+
+                //*********DISTANCE AND DURATION**********************//
+                var service = new google.maps.DistanceMatrixService();
+                service.getDistanceMatrix({
+                    origins: [source],
+                    destinations: [destination],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    unitSystem: google.maps.UnitSystem.METRIC,
+                    avoidHighways: false,
+                    avoidTolls: false
+                }, function (response, status) {
+                    if (status == google.maps.DistanceMatrixStatus.OK && response.rows[0].elements[0].status != "ZERO_RESULTS") {
+                        var distance = response.rows[0].elements[0].distance.text;
+                        var duration = response.rows[0].elements[0].duration.text;
+                        var dvDistance = document.getElementById("dvDistance");
+                        dvDistance.innerHTML = "";
+                        dvDistance.innerHTML += "Distance: " + distance + "<br />";
+                        dvDistance.innerHTML += "Duration:" + duration;
+                         var res = distance.replace("km", "");
+                         
+                        // document.getElementById("plana_min").innerHTML += distance;
+                         if (res >= 20) {
+        document.getElementById("y1").style.backgroundColor = "#5d9cec";
+        document.getElementById("y2").style.backgroundColor = "#5d9cec";
+    }
+    else {
+       document.getElementById("x1").style.backgroundColor = "#5d9cec";
+      document.getElementById("x2").style.backgroundColor = "#5d9cec";
+    }
+    
+   
+                        
+                         
+                    } else {
+                        alert("Unable to find the distance via road.");
+                    }
+                });
+            }
+        </script>
+
+
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>                        
+                    </button>
+                    <a class="navbar-brand" href="#">Portfolio</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Home</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#"></a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="container bg-3 text-center">    
+            <h1>Shipping Rates Calculator</h1><br>
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <form class="form" method="post" action="#" name="calculate" id="calculate">
+                        <div class="form-body">
+                            <h4 class="form-section"><i class="icon-eye6"></i> Calculator</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput1">Pick-up Area Pincode</label>
+                                        <input type="text" maxlength="6" id="txtSource" class="form-control border-primary" placeholder="6 Digits Pick-up Area Pincode" >
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput2">Delivery Area Pincode</label>
+                                        <input type="text" id="txtDestination" maxlength="6" class="form-control border-primary" placeholder="6 Digits Delivery Area Pincode" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput3">Approximate Weight</label>
+
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Kg</span>
+                                            <input type="text" name="kg" id="kg" class="form-control" placeholder="Weight"  >
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput4">Dimensions</label>
+                                        <input type="text" id="dimension" name="dimension" class="form-control border-primary" placeholder="Lenght">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput3">COD</label>
+                                        <select id="issueinput5" name="priority" class="form-control" data-toggle="tooltip" data-trigger="hover" data-placement="top" data-title="Priority">
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="userinput4">Declared Value in INR</label>
+                                        <input type="text" id="inr" class="form-control border-primary" placeholder="Rupess">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions right">
+
+                            <button type="button"  onclick="GetRoute()" class="btn btn-primary">
+                                <i class="fa fa-check-square-o"></i> Calculate
+                            </button>
+                        </div>
+                    </form>
+                    <div id="dvDistance">
+
+                    </div>
+                </div>
+
+                <div class="col-sm-6"> 
+                    <div id="dvMap" style="width: 500px; height: 300px">
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <br><br>
+        <div class="container-fluid text-center" id="tab">
+            <h1>Our Plans</h1>
+            <div class="tab">
+                <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Basic</button>
+                <button class="tablinks" onclick="openCity(event, 'Paris')">Advanced</button>
+                <button class="tablinks" onclick="openCity(event, 'Tokyo')">Pro</button>
+            </div>
+
+            <div id="London" class="tabcontent">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>On Road</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Zone A</th>
+                                    <th>Zone B</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Minimum Price</th>
+                                    <td id="x1">30</td>
+                                    <td id="y1">40</td>
+
+                                </tr>
+                                <tr>
+                                    <th>Maximum Price</th>
+                                    <td id="x2">33</td>
+                                    <td id="y2">43</td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6"></div>
+                </div>
+            </div>
+
+            <div id="Paris" class="tabcontent">
+                <h3>Paris</h3>
+                <p>Paris is the capital of France.</p> 
+            </div>
+
+            <div id="Tokyo" class="tabcontent">
+                <h3>Tokyo</h3>
+                <p>Tokyo is the capital of Japan.</p>
+            </div>
+
+            <script>
+                function openCity(evt, cityName) {
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(cityName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+
+                document.getElementById("defaultOpen").click();
+            </script>
+           
+            <script>
+                 //to display amount vary from distance
+                 
+                 
+                 
+            
+            </script>
+                
+        </div>
+
+
+
+        <footer class="container-fluid fixed-bottom text-center">
+            <p>Footer Text</p>
+        </footer>
+    </body>
+
+
+
+</html>
